@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>微博发布效果</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        
+        .weibo {
+            width: 600px;
+            border: 1px solid #ccc;
+            margin: 100px auto;
+            padding: 10px;
+        }
+        
+        .weibo-text {
+            width: 590px;
+            height: 140px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            outline: none;
+            resize: none;
+        }
+        
+        .weibo-text:focus {
+            border-color: #f60;
+        }
+        
+        .weibo-btn {
+            width: 80px;
+            height: 30px;
+            background-color: #f90;
+            color: #fff;
+            border: 0 none;
+            margin-top: 5px;
+            border-radius: 3px;
+            cursor: pointer;
+            outline: 0 none;
+        }
+        
+        .weibo-list {
+            padding-top: 10px;
+        }
+        
+        .weibo-list li {
+            font-size: 14px;
+            line-height: 30px;
+            border-bottom: 1px dotted #ccc;
+            overflow: hidden;
+        }
+        
+        .weibo-list li p {
+            float: left;
+        }
+        
+        .weibo-list li span {
+            float: right;
+            cursor: pointer;
+        }
+        
+        .weibo-list li input {
+            height: 24px;
+            line-height: 24px;
+            width: 300px;
+            font-size: 14px;
+            border: 0 none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="weibo">
+        <textarea class="weibo-text"></textarea>
+        <input class="weibo-btn" value="发布" type="button">
+        <ul class="weibo-list">
+        </ul>
+    </div>
+</body>
+<script>
+    //获取DOM
+    var btn = document.querySelector(".weibo-btn");
+    var text = document.querySelector(".weibo-text");
+    var ul = document.querySelector(".weibo-list");
+    //初始化一个数组，为了以后存入对象使用
+    var arr = [];
+    //实现添加功能------------------------------------------------
+    //第一步实现DOM实现添加------------
+    btn.onclick = function() {
+        var content = text.value;
+        var time = formatDate();
+        //这个位置获取id，为了后期删除使用
+        var ID = Date.now() + "" + Math.random();
+        //现在该要的值都有了，往DOM里面存就可以了
+        //首先先要创建一个li标签
+        var li = document.createElement("li");
+        //li 标签需要添加html
+        li.innerHTML = `
+        <p>${content}</p>
+        <span class="del" ID=${ID}>删除</span>
+        <span>${time}</span>
+        `;
+        //现在将li添加到ul中
+        ul.insertBefore(li, ul.children[0]);
+        //好了，到了这里，以上就是DOM的添加
+        //为了用户的更好的体验，我们在每次输入之后，将文本域清空
+        text.value = "";
+
+        //现在进行实现本地化（本地化就是存储到浏览器中）
+        //现在我们创建一个对象
+        var obj = {
+            ID: ID,
+            content: content,
+            time: time,
+        };
+        //将对象存入到arr数组中
+        arr.unshift(obj);
+        //将数组转换成字符串
+        var str = JSON.stringify(arr);
+        //将字符串实现本地话
+        localStorage.setItem("list", str);
+    }
+
+    //页面初始化----------------------------------------------
+    //我们现在浏览器中已经有了相应的数据，我们进行页面初始化
+    //第一步从浏览器中获取相应的key
+    var str = localStorage.getItem("list");
+    //为了友好性，首先我们要判断一下str为不为空
+    //str转换成arr
+    if (str == null) {
+        arr = [];
+    } else {
+        arr = JSON.parse(str);
+    }
+    for (var i = 0; i < arr.length; i++) {
+        var li = document.createElement("li");
+        li.innerHTML = `
+        <p>${arr[i].content}</p>
+        <span class="del" ID=${arr[i].ID}>删除</span>
+        <span>${arr[i].time}</span>
+        `;
+        ul.append(li);
+    }
+
+    //删除操作-----------------------------------------
+    var dom = document.querySelector(".weibo");
+    //这里我们利用事件委托进行操作
+    dom.onclick = function(e) {
+        if (e.target.className == "del") {
+            //第一步我们单纯的页面删除
+            var li = e.target.parentNode;
+            ul.removeChild(li);
+            //现在我们将浏览器中的一一对应删除，删除的标识就是之前定义的id
+            var ID = e.target.getAttribute("ID");
+
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i].ID == ID) {
+                    arr.splice(i, 1);
+                    break;
+                }
+            }
+            //实现删除的本地化
+            //这个位置在上面已经讲过了，这里不做过多的再次说明了
+            var str = JSON.stringify(arr);
+            localStorage.setItem("list", str);
+        }
+    }
+
+    function patchZero(v) {
+        return v < 10 ? '0' + v : v;
+    }
+
+    function formatDate() {
+        var now = new Date();
+        var y = now.getFullYear();
+        var m = now.getMonth() + 1;
+        var d = now.getDate();
+        var h = now.getHours();
+        var mm = now.getMinutes();
+        var s = now.getSeconds();
+        return y + '-' + patchZero(m) + '-' + patchZero(d) + ' ' + patchZero(h) + ":" + patchZero(mm) + ':' + patchZero(s);
+    }
+</script>
+
+</html>
