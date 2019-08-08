@@ -1,7 +1,7 @@
 # Weibo easy realize
 实现新浪微博的增删（利用localStorage存储到浏览器中，实现刷新不清空的效果）
 
-思路：
+## 思路：
 
 - DOM节点操作：**在点击删除的时候，把对应li从ul里面移除**；
 - 本地化数据更新：**删除对应的那条数据及整个列表数组，那我怎么知道我要删除哪个？**
@@ -15,6 +15,6 @@
     - DOM去除：删除DOM，
     - 数据去除：根据唯一的ID去找当前的数组内的数据，剔除掉；完成更新本地数据；
    
-案例效果：
+## 案例效果：
 
 ![Image text](https://raw.githubusercontent.com/Aesthetlc/img-folder/master/Weibo-easy-realize.gif)
