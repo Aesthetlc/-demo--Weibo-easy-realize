@@ -14,5 +14,7 @@
   - 删除：有了发布时新增的ID，点击删除时，获取点击对象的自定义属性ID，
     - DOM去除：删除DOM，
     - 数据去除：根据唯一的ID去找当前的数组内的数据，剔除掉；完成更新本地数据；
+   
+案例效果：
 
 ![Image text](https://raw.githubusercontent.com/Aesthetlc/img-folder/master/Weibo-easy-realize.gif)
